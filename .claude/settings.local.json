@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(openspec new:*)",
+      "Bash(openspec instructions:*)",
+      "Bash(openspec status:*)",
+      "Bash(npm create:*)",
+      "Bash(1:*)",
+      "Bash(npx --yes create-vite@latest . --template react)",
+      "Bash(printf 'y\\\\n')",
+      "Bash(npx create-vite@latest . --template react)",
+      "Read(//d/tmp/**)",
+      "Bash(npx create-vite@latest kwork-temp --template react)",
+      "Bash(cp -r /tmp/kwork-temp/* D:/projects/kwork_portfolio/)",
+      "Bash(cp /tmp/kwork-temp/.gitignore D:/projects/kwork_portfolio/)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(./node_modules/.bin/tailwindcss init:*)",
+      "Bash(npm list:*)",
+      "Bash(npm run:*)",
+      "WebFetch(domain:kart-podo.eu)",
+      "WebFetch(domain:2feet.pro)",
+      "WebFetch(domain:helios-creworld.com)"
+    ]
+  }
+}
