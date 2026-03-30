@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useScrollTo } from '../../hooks/useScrollTo'
 
@@ -7,6 +8,61 @@ const floatingShapes = [
   { size: 'w-48 h-48', pos: 'bottom-20 left-1/4', delay: 2, color: 'bg-primary-600/15 dark:bg-primary-600/8', anim: 'animate-float' },
   { size: 'w-32 h-32', pos: 'bottom-32 right-1/4', delay: 0.5, color: 'bg-accent/25 dark:bg-accent/15', anim: 'animate-pulse-slow' },
 ]
+
+const stats = [
+  { value: 50, suffix: '+', label: 'проектов' },
+  { value: 3, suffix: '+', label: 'года опыта' },
+  { value: 100, suffix: '%', label: 'довольных клиентов' },
+]
+
+function useCountUp(target, duration = 1800, start = false) {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    if (!start) return
+    let startTime = null
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp
+      const progress = Math.min((timestamp - startTime) / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setCount(Math.floor(eased * target))
+      if (progress < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }, [start, target, duration])
+  return count
+}
+
+function StatCard({ value, suffix, label, delay, shouldReduce }) {
+  const [inView, setInView] = useState(false)
+  const ref = useRef(null)
+  const count = useCountUp(value, 1600, inView && !shouldReduce)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setInView(true) },
+      { threshold: 0.3 }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={shouldReduce ? false : { opacity: 0, y: 30 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay }}
+      className="flex flex-col items-center"
+    >
+      <span className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-primary-500 to-accent bg-clip-text text-transparent leading-none">
+        {shouldReduce ? value : count}{suffix}
+      </span>
+      <span className="mt-1.5 text-sm sm:text-base text-gray-500 dark:text-gray-400 font-medium">
+        {label}
+      </span>
+    </motion.div>
+  )
+}
 
 export default function Hero() {
   const scrollTo = useScrollTo()
@@ -46,11 +102,7 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-5 sm:px-6 pt-24 pb-16 sm:pt-0 sm:pb-0 text-center">
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="visible"
-        >
+        <motion.div variants={container} initial="hidden" animate="visible">
           <motion.h1
             variants={fadeUp}
             className="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-gray-900 dark:text-white leading-tight mb-5 sm:mb-6"
@@ -85,15 +137,20 @@ export default function Hero() {
             </button>
           </motion.div>
 
+          {/* Stats */}
           <motion.div
             variants={fadeUp}
-            className="mt-10 sm:mt-14 flex flex-wrap justify-center gap-5 sm:gap-8 text-sm text-gray-500 dark:text-gray-400"
+            className="mt-12 sm:mt-16 grid grid-cols-3 gap-4 sm:gap-8 max-w-lg mx-auto"
           >
-            {['50+ проектов', 'Гарантия качества', 'Поддержка 24/7'].map((stat) => (
-              <div key={stat} className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-primary-500"></span>
-                {stat}
-              </div>
+            {stats.map((s, i) => (
+              <StatCard
+                key={s.label}
+                value={s.value}
+                suffix={s.suffix}
+                label={s.label}
+                delay={i * 0.15}
+                shouldReduce={shouldReduceMotion}
+              />
             ))}
           </motion.div>
         </motion.div>
@@ -102,7 +159,7 @@ export default function Hero() {
       {/* Scroll indicator */}
       {!shouldReduceMotion && (
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          className="absolute bottom-8 inset-x-0 flex justify-center"
           animate={{ y: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 1.5 }}
         >

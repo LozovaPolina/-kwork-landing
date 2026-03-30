@@ -41,7 +41,7 @@ export default function Navbar() {
           onClick={() => scrollTo('hero')}
           className="text-xl font-bold text-primary-600 dark:text-accent hover:opacity-80 transition-opacity"
         >
-          DevTeam
+          Roxensoft
         </button>
 
         {/* Desktop links */}
